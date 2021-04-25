@@ -1,0 +1,4 @@
+{
+    EMPLOYEEID : 100,
+    NAME: "KUMAR"
+}

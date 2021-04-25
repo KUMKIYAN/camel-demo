@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camel="http://camel.apache.org/schema/spring"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:cxf="http://camel.apache.org/schema/cxf"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+  http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+  http://www.w3.org/2001/XMLSchema-instance http://www.w3.org/2001/XMLSchema.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+  ">
+    <camelContext xmlns="http://camel.apache.org/schema/spring">
+            <route>
+                <from id="inbox" uri="file://src/test/data/inbox"/>
+                <choice>
+                    <when>
+                        <simple>${file:ext} == 'txt'</simple>
+                        <log message="Entered into Service generateResponse" loggingLevel="INFO" />
+                        <log message="Entered into Service generateResponseXXXXXXXXXXXXXXXXXXXXXXXX" loggingLevel="INFO" />
+                        <process ref="myFileProcessor"/>
+                        <to uri="file://src/test/data/outbox"/>
+                        <transform>
+                            <simple>${body.toLowerCase()}</simple>
+                        </transform>
+                        <to uri="file://src/test/data/converted"/>
+                        <transform>
+                            <simple>----------------Camel-------------</simple>
+                        </transform>
+                        <to uri="file://src/test/data/out"/>
+                    </when>
+                <otherwise>
+                    <to uri="file://src/test/data/outProperties"/>
+                </otherwise>
+                </choice>
+            </route>
+            <route>
+                <from uri="direct:Start" />
+                <to uri="bean:bar?method=doSomething" />
+            </route>
+    </camelContext>
+
+    <bean id="myFileProcessor" class="com.example.cameldemo.MyFileProcessor"/>
+</beans>
